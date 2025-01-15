@@ -8,8 +8,8 @@ use curve25519_dalek::Scalar;
 use crate::okvs;
 use fxhash::hash64;
 
-pub const DIM: usize = 2;
-pub const R: u64 = 20;
+pub const DIM: usize = 5;
+pub const R: u64 = 30;
 pub const BLK_CELLS: usize = 1 << DIM;
 pub const SIDE_LEN: u64 = 2 * R;
 pub const R_L2: u64 = R * R;

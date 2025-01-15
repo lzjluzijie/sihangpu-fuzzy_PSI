@@ -26,6 +26,7 @@ mod tests {
     use curve25519_dalek::RistrettoPoint;
 
     use fxhash::hash64;
+    use f_psi::psi::DIM;
 
     fn sample_test_data_points(num: usize) -> Vec<psi::Point> {
         let mut rng = rand::thread_rng();
@@ -41,37 +42,43 @@ mod tests {
     }
 
     #[test]
-    fn protocol() {
-        let n = 2000;
-        let m = 10000;
+    fn protocol_net() {
+        // let n = 256;
+        // let m = 256;
+        // let n = 2048;
+        // let m = 2048;
+        let n = 16384;
+        let m = 16384;
         println!("n: {}, m: {}, d:{}, delta:{}", n, m, psi::DIM, psi::R);
         let data_r = sample_test_data_points(n);
         let mut data_s = sample_test_data_points(m);
-        data_s[9][0] = data_r[7][0] - psi::R / 2;
-        data_s[9][1] = data_r[7][1] + psi::R / 2;
-        data_s[11][0] = data_r[7][0] + psi::R;
-        data_s[11][1] = data_r[7][1] - psi::R;
+        for k in 0..DIM {
+            data_s[9][k] = data_r[7][k] - psi::R / 2;
+            data_s[11][k] = data_r[7][k] + psi::R;
+        }
         let (rcr, sdr) = protocol::setup(n, m, false, 0);
         let now = Instant::now();
-        test::black_box(protocol::run_standard(rcr, sdr, data_r, data_s));
+        test::black_box(protocol::run_standard_net(rcr, sdr, data_r, data_s));
         let elapsed = now.elapsed();
         println!("Elapsed Time for Protocol: {:.2?}", elapsed);
     }
 
     #[test]
     fn protocol_apart() {
-        let n = 2000;
-        let m = 1000;
+        let n = 256;
+        let m = 256;
+        // let n = 2048;
+        // let m = 2048;
         println!("n: {}, m: {}, d:{}, delta:{}", n, m, psi::DIM, psi::R);
         let data_r = sample_test_data_points(n);
         let mut data_s = sample_test_data_points(m);
-        data_s[9][0] = data_r[7][0] - psi::R / 2;
-        data_s[9][1] = data_r[7][1] + psi::R / 2;
-        data_s[11][0] = data_r[7][0] + psi::R;
-        data_s[11][1] = data_r[7][1] - psi::R;
+        for k in 0..DIM {
+            data_s[9][k] = data_r[7][k] - psi::R / 2;
+            data_s[11][k] = data_r[7][k] + psi::R;
+        }
         let (rcr, sdr) = protocol::setup(n, m, true, 0);
         let now = Instant::now();
-        test::black_box(protocol::run_standard_apart(rcr, sdr, data_r, data_s));
+        test::black_box(protocol::run_apart_net(rcr, sdr, data_r, data_s));
         let elapsed = now.elapsed();
         println!("Elapsed Time for Protocol: {:.2?}", elapsed);
     }
